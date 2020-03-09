@@ -86,7 +86,7 @@ char *input_string() {
         size_t size;
         size_t capacity;
     } buf = {NULL, 0, 0};
-    char c = '\0';
+    char c;
     while (c = input_char(), c != EOF && c != '\n') {
         if (buf.size + 1 >= buf.capacity) {
             size_t new_capacity = !buf.capacity ? 1 : buf.capacity * 2;
@@ -145,7 +145,7 @@ train* create_train(char* train_name, size_t h, size_t m, size_t number_of_stops
         free(convoy);
         return NULL;
     }
-    for(size_t i = 0; i < number_of_stops; i++) {
+    for (size_t i = 0; i < number_of_stops; i++) {
         convoy->stops[i] = (train_stop* )malloc(sizeof(train_stop));
         if (!convoy->stops[i]) {
             for (size_t j = 0; j < i; j++) {
@@ -248,12 +248,12 @@ trains* init_from_file(const char* path_file) {
 }
 
 int input_int() {
-    char c = '\0';
+    char c;
     int result = 0;
     while (c = input_char(), c != EOF && c != '\n') {
         if (!(c >= '0' && c <= '9')) {
             char *buf = input_string(); /* Read to the end of the string */
-            if (buf) {
+            if (*buf) {
                 free(buf);
             }
             return -1;
@@ -301,7 +301,7 @@ user_input* read_input_user_data() {
         return NULL;
     }
     user->station_name = station_name;
-    user->time_in_m = humantime_to_min((size_t )time_h, (size_t )time_m);
+    user->time_in_m = humantime_to_min((size_t)time_h, (size_t)time_m);
     printf("Searching for the nearest flight to %s at %d:%d...\n", station_name, time_h, time_m);
     return user;
 }
