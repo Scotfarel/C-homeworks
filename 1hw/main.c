@@ -40,6 +40,7 @@ void free_user(user_input* user);
 size_t humantime_to_min(size_t h, size_t m);
 char input_char();
 char *input_string();
+int input_int();
 
 
 int main(int argc, char* argv[]) {
@@ -246,6 +247,25 @@ trains* init_from_file(const char* path_file) {
     return trains_list;
 }
 
+int input_int() {
+    char c = '\0';
+    int result = 0;
+    while (c = input_char(), c != EOF && c != '\n') {
+        if (!(c >= '0' && c <= '9')) {
+            char *buf = input_string(); /* Read to the end of the string */
+            if (buf) {
+                free(buf);
+            }
+            return -1;
+        }
+        result = result * 10 + c - '0';
+    }
+    if ((result == 0) && (c == '\n')) {
+        return -1;
+    }
+    return result;
+}
+
 user_input* read_input_user_data() {
     user_input* user = (user_input*) malloc(sizeof(user_input));
     if (!user) {
@@ -262,7 +282,8 @@ user_input* read_input_user_data() {
 
     printf("Input trip departure hours (0..23): ");
     int time_h = 0;
-    if ((scanf("%d", &time_h) != 1) || (time_h < 0 || time_h > 23)) {
+    time_h = input_int();
+    if ((time_h == -1) || (time_h < 0 || time_h > 23)) {
         fprintf(stderr, "Error while reading user structure\n");
         free(station_name);
         free(user);
@@ -272,7 +293,8 @@ user_input* read_input_user_data() {
     printf("Input trip departure minutes (0..59): ");
 
     int time_m = 0;
-    if ((scanf("%d", &time_m) != 1) || (time_m < 0 || time_m > 59)) {
+    time_m = input_int();
+    if ((time_m == -1) || (time_m < 0 || time_m > 59)) {
         fprintf(stderr, "Error while creating user structure\n");
         free(station_name);
         free(user);
