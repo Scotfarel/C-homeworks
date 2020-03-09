@@ -61,18 +61,6 @@ Trains* create_trains_list(size_t number_of_trains) {
         fprintf(stderr, "Malloc error on trains array\n");
         return 0;
     }
-    for (size_t i = 0; i < number_of_trains; i++) {
-        t_list->list[i] = (train* )malloc(sizeof(train));
-        if (!t_list->list[i]) {
-            for (size_t j = 0; j < i; j++) {
-                free(t_list->list[j]);
-            }
-            free(t_list->list);
-            free(t_list);
-            fprintf(stderr, "Malloc error on trains\n");
-            return 0;
-        }
-    }
     return t_list;
 }
 
