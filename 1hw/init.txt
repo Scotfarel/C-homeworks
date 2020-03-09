@@ -1,0 +1,9 @@
+2
+JOTARO 9 50 3
+Kyrsk 10 0 10 5
+Orel 10 10 10 15
+Voronezh 10 20 10 25
+DIO 9 50 3
+Orel 10 5 10 15
+Novgorod 10 25 10 30
+Belgorod 10 45 10 55

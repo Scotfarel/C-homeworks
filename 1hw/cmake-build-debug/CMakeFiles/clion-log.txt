@@ -1,0 +1,5 @@
+/snap/clion/103/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/ivan/technopark/C++
+CMake Error: The current CMakeCache.txt directory /home/ivan/technopark/C++/C-homeworks/1hw/cmake-build-debug/CMakeCache.txt is different than the directory /home/ivan/technopark/C++/cmake-build-debug where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt
+-- Configuring incomplete, errors occurred!
+See also "/home/ivan/technopark/C++/C-homeworks/1hw/cmake-build-debug/CMakeFiles/CMakeOutput.log".
+Unable to determine product file path for target C__. Running and debugging will be unavailable.
