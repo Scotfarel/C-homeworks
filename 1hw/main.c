@@ -2,7 +2,16 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define PATH_INIT "/home/ivan/technopark/C++/init.txt"
+#define PATH_INPUT "/home/ivan/technopark/C++/1IZ/correct_input.txt"
 #define MAX_STR_SIZE 64
+
+#define SUCCESS 0
+#define NOT_FOUND -1
+
+#define ERR_INIT -2
+#define ERR_READ -3
+
 
 typedef struct {
     char* station_name;
@@ -28,7 +37,7 @@ typedef struct {
 } trains;
 
 trains* init_from_file(const char* path_file);
-user_input* read_input_user_data();
+user_input* read_input_user_data(char* path);
 char* search_train(trains* trains_list, char* station, size_t time);
 
 trains* create_trains_list(size_t number_of_trains);
@@ -44,40 +53,32 @@ char input_char();
 char *input_string();
 int input_int();
 
-//TODO(@me): reformat error messages
-//TODO(@me): defines
-//TODO(@me): create a project structure on repo
+
 int main(int argc, char* argv[]) {
     char* path = "/home/ivan/technopark/C++/init.txt";
     char* in_path = "/home/ivan/technopark/C++/1IZ/correct_input.txt";
     trains* trains_list = init_from_file(path);
     if (!trains_list) {
-        printf("Error in initialization\n");
-        return 0;
+        return ERR_INIT;
     }
-    FILE* mf = freopen(in_path, "r", stdin);
-    if (!mf) {
-        free_memory(trains_list);
-        return 0;
-    }
-    user_input* data = read_input_user_data();
+    user_input* data = read_input_user_data(in_path);
     if (!data) {
         printf("Error in users input data\n");
         free_memory(trains_list);
-        return 0;
+        return ERR_READ;
     }
     char* train_name = search_train(trains_list, data->station_name, data->time_in_m);
     if (!train_name) {
         printf("Alert! There are no flight today\n");
         free_user(data);
         free_memory(trains_list);
-        return 0;
+        return NOT_FOUND;
     } else {
         printf("Alert! %s is the nearest train\n", train_name);
     }
     free_user(data);
     free_memory(trains_list);
-    return 0;
+    return SUCCESS;
 }
 
 
@@ -128,14 +129,14 @@ trains* create_trains_list(size_t number_of_trains) {
     trains* t_list = (trains* )malloc(sizeof(trains));
     if (!t_list) {
         fprintf(stderr, "Malloc error on arr_train\n");
-        return 0;
+        return NULL;
     }
     t_list->num_of_trains = number_of_trains;
     t_list->arr_train = (train** )malloc(sizeof(train*) * number_of_trains);
     if (!t_list->arr_train) {
         free(t_list);
         fprintf(stderr, "Malloc error on trains array\n");
-        return 0;
+        return NULL;
     }
     return t_list;
 }
@@ -200,14 +201,14 @@ trains* init_from_file(const char* path_file) {
     }
     size_t number_of_trains = 0;
     if (fscanf(source_file, "%zu", &number_of_trains) != 1) {
-        fprintf(stderr, "Error while reading init-file1\n");
+        fprintf(stderr, "Initialization error\n");
         fclose(source_file);
         return NULL;
     }
 
     trains* trains_list = create_trains_list(number_of_trains);
     if (!trains_list) {
-        fprintf(stderr, "Error while reading init-file2\n");
+        fprintf(stderr, "Creating trains structure error\n");
         fclose(source_file);
         return NULL;
     }
@@ -217,14 +218,14 @@ trains* init_from_file(const char* path_file) {
         size_t m = 0;
         size_t number_of_stops = 0;
         if (fscanf(source_file, "%64s %zu %zu %zu", train_name, &h, &m, &number_of_stops) != 4) {
-            fprintf(stderr, "Error while reading init-file3\n");
+            fprintf(stderr, "Initialization error\n");
             fclose(source_file);
             free_trains_list(trains_list);
             return NULL;
         }
         train* convoy = create_train(train_name, h, m, number_of_stops);
         if (!convoy) {
-            fprintf(stderr, "Error while reading init-file4\n");
+            fprintf(stderr, "Creating train structure error\n");
             fclose(source_file);
             free_trains_list(trains_list);
             return NULL;
@@ -239,7 +240,7 @@ trains* init_from_file(const char* path_file) {
                                 &department_h,
                                 &department_m);
             if (res != 5) {
-                fprintf(stderr, "Error while reading init-file5\n");
+                fprintf(stderr, "Initialization error\n");
                 fclose(source_file);
                 free(stop_name);
                 free_train(convoy);
@@ -276,9 +277,15 @@ int input_int() {
     return result;
 }
 
-user_input* read_input_user_data() {
+user_input* read_input_user_data(char* path) {
+    FILE* mf = freopen(path, "r", stdin);
+    if (!mf) {
+        return NULL;
+    }
+
     user_input* user = (user_input*) malloc(sizeof(user_input));
     if (!user) {
+        fprintf(stderr, "Allocation error\n");
         return NULL;
     }
 
@@ -294,18 +301,17 @@ user_input* read_input_user_data() {
     int time_h = 0;
     time_h = input_int();
     if ((time_h == -1) || (time_h < 0 || time_h > 23)) {
-        fprintf(stderr, "Error while reading user structure\n");
+        fprintf(stderr, "Incorrect input data\n");
         free(station_name);
         free(user);
         return NULL;
     }
 
     printf("Input trip departure minutes (0..59): ");
-
     int time_m = 0;
     time_m = input_int();
     if ((time_m == -1) || (time_m < 0 || time_m > 59)) {
-        fprintf(stderr, "Error while creating user structure\n");
+        fprintf(stderr, "Incorrect input data\n");
         free(station_name);
         free(user);
         return NULL;
