@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define MAX_STR_SIZE 64
+
 typedef struct {
     char* station_name;
     size_t time_in_m;
@@ -42,12 +44,20 @@ char input_char();
 char *input_string();
 int input_int();
 
-
+//TODO(@me): reformat error messages
+//TODO(@me): defines
+//TODO(@me): create a project structure on repo
 int main(int argc, char* argv[]) {
     char* path = "/home/ivan/technopark/C++/init.txt";
+    char* in_path = "/home/ivan/technopark/C++/1IZ/correct_input.txt";
     trains* trains_list = init_from_file(path);
     if (!trains_list) {
         printf("Error in initialization\n");
+        return 0;
+    }
+    FILE* mf = freopen(in_path, "r", stdin);
+    if (!mf) {
+        free_memory(trains_list);
         return 0;
     }
     user_input* data = read_input_user_data();
@@ -202,11 +212,11 @@ trains* init_from_file(const char* path_file) {
         return NULL;
     }
     for (size_t i = 0; i < number_of_trains; i++) {
-        char* train_name = (char *)malloc(64 * sizeof(char));
+        char* train_name = (char *)malloc(MAX_STR_SIZE * sizeof(char) + 1);
         size_t h = 0;
         size_t m = 0;
         size_t number_of_stops = 0;
-        if (fscanf(source_file, "%s %zu %zu %zu", train_name, &h, &m, &number_of_stops) != 4) {
+        if (fscanf(source_file, "%64s %zu %zu %zu", train_name, &h, &m, &number_of_stops) != 4) {
             fprintf(stderr, "Error while reading init-file3\n");
             fclose(source_file);
             free_trains_list(trains_list);
@@ -221,8 +231,8 @@ trains* init_from_file(const char* path_file) {
         }
         size_t arrival_h, arrival_m, department_h, department_m = 0;
         for (size_t j = 0; j < number_of_stops; j++) {
-            char* stop_name = (char *)malloc(64 * sizeof(char));
-            size_t res = fscanf(source_file, "%s %zu %zu %zu %zu",
+            char* stop_name = (char *)malloc(MAX_STR_SIZE * sizeof(char) + 1);
+            size_t res = fscanf(source_file, "%64s %zu %zu %zu %zu",
                                 stop_name,
                                 &arrival_h,
                                 &arrival_m,
